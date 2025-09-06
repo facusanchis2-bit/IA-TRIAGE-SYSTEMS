@@ -1,0 +1,23 @@
+fastapi==0.116.1
+uvicorn[standard]==0.35.0
+pydantic==2.11.7
+python-multipart==0.0.20
+python-dotenv==1.1.1
+
+# Data/ML (por ahora dejamos lo que vienes usando)
+numpy==2.2.6
+pandas==2.3.2
+scikit-learn==1.7.1
+xgboost==3.0.5
+lightgbm==4.6.0
+shap==0.48.0
+sqlitedict==2.1.0
+spacy==3.8.7
+
+# DB
+sqlalchemy>=2.0
+alembic==1.14.0
+psycopg[binary]==3.2.3
+
+# Starlette/AnyIO deps ya los trae FastAPI, pero dejamos compat
+typing-extensions==4.15.0

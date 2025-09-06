@@ -1,0 +1,54 @@
+# docker-compose.yml (reemplazá todo el archivo)
+services:
+  db:
+    image: postgres:16-alpine
+    container_name: triage-db
+    environment:
+      POSTGRES_USER: triage
+      POSTGRES_PASSWORD: triage
+      POSTGRES_DB: triage
+    ports:
+      - "5432:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U triage -d triage"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+
+  api:
+    container_name: triage-api
+    build:
+      context: .
+      dockerfile: Dockerfile
+    environment:
+      ADMIN_USER: admin
+      ADMIN_PASS: admin
+      PHI_SALT: cambiame-por-una-sal-larga
+      DATABASE_URL: postgresql+psycopg://triage:triage@db:5432/triage
+      DB_POOL_SIZE: "5"
+      DB_MAX_OVERFLOW: "5"
+      DB_POOL_RECYCLE: "1800"
+      DB_POOL_TIMEOUT: "10"
+    depends_on:
+      db:
+        condition: service_healthy
+    volumes:
+      - ./logs:/app/logs
+    ports:
+      - "8000:8000"
+    healthcheck:
+      test: ["CMD-SHELL", "wget -qO- http://localhost:8000/health >/dev/null 2>&1 || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
+  frontend:
+    container_name: triage-frontend
+    build:
+      context: ../triage-frontend
+      dockerfile: dockerfile
+    depends_on:
+      - api
+    ports:
+      - "5173:80"   # dejás el frontend en http://localhost:5173
+
